@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List with Local Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f4f4f4;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Add a new task" />
+    <button id="addTask">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const addTaskButton = document.getElementById('addTask');
+        const taskList = document.getElementById('taskList');
+
+        // Load tasks from local storage
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.forEach(task => addTaskToDOM(task));
+        }
+
+        // Save tasks to local storage
+        function saveTasks() {
+            const tasks = Array.from(taskList.children).map(item => item.textContent.replace('Remove', '').trim());
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Add task to DOM
+        function addTaskToDOM(task) {
+            const li = document.createElement('li');
+            li.textContent = task;
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => {
+                li.remove();
+                saveTasks();
+            };
+
+            li.appendChild(removeButton);
+            taskList.appendChild(li);
+        }
+
+        // Add task event
+        addTaskButton.onclick = () => {
+            const task = taskInput.value.trim();
+            if (task) {
+                addTaskToDOM(task);
+                saveTasks();
+                taskInput.value = ''; // Clear input
+            }
+        };
+
+        // Initialize
+        loadTasks();
+    </script>
+</body>
+</html>
